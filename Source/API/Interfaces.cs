@@ -474,5 +474,9 @@ namespace Multiplayer.API
         ISyncDelegate RegisterSyncDelegate(Type inType, string nestedType, string methodName, string[] fields, Type[] args = null);
 
         void RegisterSyncWorker<T>(SyncWorkerDelegate<T> syncWorkerDelegate, Type targetType = null, bool isImplicit = false, bool shouldConstruct = false);
+
+        void RegisterDialogNodeTree(Type type, string methodOrPropertyName, SyncType[] argTypes = null);
+
+        void RegisterDialogNodeTree(MethodInfo method);
     }
 }

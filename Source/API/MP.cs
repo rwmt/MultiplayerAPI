@@ -210,5 +210,30 @@ namespace Multiplayer.API
         /// <param name="shouldConstruct">If set to <c>true</c> the SyncWorker will be provided with an instance created with no arguments.</param>
         /// <typeparam name="T">Type to handle.</typeparam>
         public static void RegisterSyncWorker<T>(SyncWorkerDelegate<T> syncWorkerDelegate, Type targetType = null, bool isImplicit = false, bool shouldConstruct = false) => Sync.RegisterSyncWorker(syncWorkerDelegate, targetType, isImplicit: isImplicit, shouldConstruct: shouldConstruct);
+
+        /// <summary>
+        /// Registers a method which opens a <see cref="Dialog_NodeTree"/>. The options picked by players will then be synced between all clients.
+        /// </summary>
+        /// <param name="type">Type that contains the method</param>
+        /// <param name="methodOrPropertyName">Name of the method</param>
+        /// <param name="argTypes">Method's parameter types</param>
+        public static void RegisterSyncDialogNodeTree(Type type, string methodOrPropertyName, SyncType[] argTypes = null) => Sync.RegisterDialogNodeTree(type, methodOrPropertyName, argTypes);
+
+        /// <summary>
+        /// Registers a method which opens a <see cref="Dialog_NodeTree"/>. The options picked by players will then be synced between all clients.
+        /// </summary>
+        /// <param name="method">MethodInfo of a method to register</param>
+        /// <param name="argTypes">Method's parameter types</param>
+        /// <remarks>
+        /// <para>It's recommended to use <see cref="SyncDialogNodeTreeAttribute"/> instead, unless you have to otherwise.</para>
+        /// <para>It can be combined with <see cref="RegisterSyncMethod"/> so the call will be replicated by the MPApi on all clients automatically.</para>
+        /// </remarks>
+        /// <example>
+        /// Register a method creating a <see cref="Dialog_NodeTree"/> for syncing using reflection and set it to debug only.
+        /// <code>
+        ///    RegisterSyncDialogNodeTree(typeof(MyType).GetMethod(nameof(MyType.MyMethod))).SetDebugOnly();
+        /// </code>
+        /// </example>
+        public static void RegisterSyncDialogNodeTree(MethodInfo method) => Sync.RegisterDialogNodeTree(method);
     }
 }
