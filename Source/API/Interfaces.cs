@@ -176,6 +176,20 @@ namespace Multiplayer.API
         ISyncMethod SetPostInvoke(Action<object, object[]> action);
 
         /// <summary>
+        /// Adds a Function that runs before a call data is sent to the rest of the clients for synchronization.
+        /// </summary>
+        /// <param name="function">A function ran before a call data is sent to the rest of the players for synchronization. Called with target and value. Can return false to cancel the synchronization.</param>
+        /// <returns>self</returns>
+        ISyncMethod SetPreSync(Func<object, object[], bool> function);
+
+        /// <summary>
+        /// Adds an Action that runs after a field data is sent to the rest of the clients, but before being synchronized.
+        /// </summary>
+        /// <param name="action">An action ran after the field is sent for synchronization, but before actually being synchronization. Called with target and value.</param>
+        /// <returns>self</returns>
+        ISyncMethod SetPostSync(Action<object, object[]> action);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="version">Handler version</param>
