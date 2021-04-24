@@ -82,5 +82,15 @@ namespace Multiplayer.API
         {
             throw new UninitializedAPI();
         }
+
+        public void RegisterDialogNodeTree(Type type, string methodOrPropertyName, SyncType[] argTypes = null)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public void RegisterDialogNodeTree(MethodInfo method)
+        {
+            throw new UninitializedAPI();
+        }
     }
 }
