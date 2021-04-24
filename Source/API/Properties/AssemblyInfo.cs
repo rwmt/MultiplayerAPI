@@ -10,7 +10,7 @@ using Multiplayer.API;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Multiplayer")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -18,7 +18,7 @@ using Multiplayer.API;
 // The form "{Major}.{Minor}.*" will automatically update the build and revision,
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-[assembly: AssemblyVersion("0.1")]
+[assembly: AssemblyVersion("0.3")]
 [assembly: AssemblyFileVersion(MP.API)]
 
 // The following attributes are used to specify the signing key for the assembly, 
