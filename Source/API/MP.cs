@@ -235,5 +235,26 @@ namespace Multiplayer.API
         /// </code>
         /// </example>
         public static void RegisterSyncDialogNodeTree(MethodInfo method) => Sync.RegisterDialogNodeTree(method);
+
+        /// <summary>
+        /// Registers a delegate which will be called to check if the game should be paused on specific map.
+        /// In case async time is active, only that map will be paused, otherwise all of them will be paused.
+        /// If async time is enabled, it'll also be called globally with <see langword="null"/> as the parameter, which will affect all maps. It's skipped if async time is disabled.
+        /// </summary>
+        /// <param name="pauseEnforcer">Delegate with <see cref="Map"/> as the only parameter returning a <see cref="bool"/> which will be called to see if the game should be paused</param>
+        /// <remarks>It's recommended to use <see cref="PauseEnforcerAttribute"/> instead, unless you have to otherwise.</remarks>
+        /// <example>
+        /// Register a method as a delagate for forced pause enforcing
+        /// <code>
+        ///     void Register() => RegisterPauseEnforcer(MyMethod);
+        ///     void MyMethod(Map map) => return MyOtherClass.shouldPause;
+        /// </code>
+        ///
+        /// Register a dynamic method as a delegate for forced pause enforcing
+        /// <code>
+        ///     RegisterPauseEnforcer(map => MyOtherClass.shouldPause);
+        /// </code>
+        /// </example>
+        public static void RegisterPauseEnforcer(PauseEnforcerDelegate pauseEnforcer) => Sync.RegisterPauseEnforcer(pauseEnforcer);
     }
 }
