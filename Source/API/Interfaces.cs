@@ -302,6 +302,14 @@ namespace Multiplayer.API
             this.isWriting = isWriting;
         }
 
+        public void Write<T>(T obj, SyncType type)
+        {
+            if (isWriting)
+            {
+                Bind(ref obj, type);
+            }
+        }
+
         /// <summary>
         /// Write the specified obj, only active during writing.
         /// </summary>
@@ -311,6 +319,20 @@ namespace Multiplayer.API
             if (isWriting) {
                 Bind(ref obj);
             }
+        }
+
+        public T Read<T>(SyncType type)
+        {
+            T obj = default(T);
+
+            if (isWriting)
+            {
+                return obj;
+            }
+
+            Bind(ref obj, type);
+
+            return obj;
         }
 
         /// <summary>
@@ -329,6 +351,8 @@ namespace Multiplayer.API
 
             return obj;
         }
+
+        public abstract void Bind<T>(ref T obj, SyncType type);
 
         /// <summary>Reads or writes a <see cref="Type"/> referenced by <paramref name="type"/>.</summary>
         /// <typeparam name="T">Base type that <paramref name="type"/> derives from.</typeparam>
