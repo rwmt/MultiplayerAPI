@@ -241,20 +241,20 @@ namespace Multiplayer.API
         /// In case async time is active, only that map will be paused, otherwise all of them will be paused.
         /// If async time is enabled, it'll also be called globally with <see langword="null"/> as the parameter, which will affect all maps. It's skipped if async time is disabled.
         /// </summary>
-        /// <param name="pauseEnforcer">Delegate with <see cref="Map"/> as the only parameter returning a <see cref="bool"/> which will be called to see if the game should be paused</param>
-        /// <remarks>It's recommended to use <see cref="PauseEnforcerAttribute"/> instead, unless you have to otherwise.</remarks>
+        /// <param name="pauseLock">Delegate with <see cref="Map"/> as the only parameter returning a <see cref="bool"/> which will be called to see if the game should be paused</param>
+        /// <remarks>It's recommended to use <see cref="PauseLockAttribute"/> instead, unless you have to otherwise.</remarks>
         /// <example>
-        /// Register a method as a delagate for forced pause enforcing
+        /// Register a method as a delagate for forced pause locking
         /// <code>
-        ///     void Register() => RegisterPauseEnforcer(MyMethod);
+        ///     void Register() => RegisterPauseLock(MyMethod);
         ///     void MyMethod(Map map) => return MyOtherClass.shouldPause;
         /// </code>
         ///
-        /// Register a dynamic method as a delegate for forced pause enforcing
+        /// Register a dynamic method as a delegate for forced pause locking
         /// <code>
-        ///     RegisterPauseEnforcer(map => MyOtherClass.shouldPause);
+        ///     RegisterPauseLock(map => MyOtherClass.shouldPause);
         /// </code>
         /// </example>
-        public static void RegisterPauseEnforcer(PauseEnforcerDelegate pauseEnforcer) => Sync.RegisterPauseEnforcer(pauseEnforcer);
+        public static void RegisterPauseLock(PauseLockDelegate pauseLock) => Sync.RegisterPauseLock(pauseLock);
     }
 }

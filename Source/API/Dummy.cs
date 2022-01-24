@@ -93,7 +93,7 @@ namespace Multiplayer.API
             throw new UninitializedAPI();
         }
 
-        public void RegisterPauseEnforcer(PauseEnforcerDelegate pauseEnforcer)
+        public void RegisterPauseLock(PauseLockDelegate pauseLock)
         {
             throw new UninitializedAPI();
         }

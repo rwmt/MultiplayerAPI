@@ -452,18 +452,18 @@ namespace Multiplayer.API
     }
 
     /// <summary>
-    /// An attribute that marks a method for pause enforcement checking It needs a <see cref="bool"/> return type and a single <see cref="Map"/> parameter.
+    /// An attribute that marks a method for pause lock checking It needs a <see cref="bool"/> return type and a single <see cref="Map"/> parameter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class PauseEnforcerAttribute : Attribute
+    public class PauseLockAttribute : Attribute
     { }
 
     /// <summary>
-    /// Signature for adding new local pause enforcing methods
+    /// Signature for adding new local pause locking methods
     /// </summary>
     /// <param name="map">Current map to check if it should be paused</param>
     /// <returns><see langword="true"/> if time should be paused on the specific map</returns>
-    public delegate bool PauseEnforcerDelegate(Map map);
+    public delegate bool PauseLockDelegate(Map map);
 
     public interface IAPI
     {
@@ -494,6 +494,6 @@ namespace Multiplayer.API
 
         void RegisterDialogNodeTree(MethodInfo method);
 
-        void RegisterPauseEnforcer(PauseEnforcerDelegate pauseEnforcer);
+        void RegisterPauseLock(PauseLockDelegate pauseLock);
     }
 }
