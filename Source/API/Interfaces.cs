@@ -479,6 +479,8 @@ namespace Multiplayer.API
         bool IsHosting { get; }
         bool IsInMultiplayer { get; }
         string PlayerName { get; }
+        bool IsExecutingSyncCommand { get; }
+        bool IsExecutingSyncCommandIssuedBySelf { get; }
 
         void WatchBegin();
         void Watch(Type targetType, string fieldName, object target = null, object index = null);

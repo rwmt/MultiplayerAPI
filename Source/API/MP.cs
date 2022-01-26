@@ -66,6 +66,16 @@ namespace Multiplayer.API
         /// </value>
         public static string PlayerName => Sync.PlayerName;
 
+        /// <value>
+        /// Returns <see langword="true"/> if currently there's a sync command being executed.
+        /// </value>
+        public static bool IsExecutingSyncCommand => Sync.IsExecutingSyncCommand;
+
+        /// <value>
+        /// Returns <see langword="true"/> if currently there's a sync command being executed that was issued by the current player.
+        /// </value>
+        public static bool IsExecutingSyncCommandIssuedBySelf => Sync.IsExecutingSyncCommandIssuedBySelf;
+
         /// <summary>
         /// Starts a new synchronization stack.
         /// </summary>
