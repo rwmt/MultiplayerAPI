@@ -18,6 +18,10 @@ namespace Multiplayer.API
 
         public string PlayerName => null;
 
+        public bool IsExecutingSyncCommand => false;
+
+        public bool IsExecutingSyncCommandIssuedBySelf => false;
+
         public void WatchBegin()
         {
             throw new UninitializedAPI();
