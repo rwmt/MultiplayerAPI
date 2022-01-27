@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Verse;
 
 namespace Multiplayer.API
 {
@@ -474,6 +475,20 @@ namespace Multiplayer.API
         void Sync(SyncWorker sync);
     }
 
+    /// <summary>
+    /// An attribute that marks a method for pause lock checking It needs a <see cref="bool"/> return type and a single <see cref="Map"/> parameter.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class PauseLockAttribute : Attribute
+    { }
+
+    /// <summary>
+    /// Signature for adding new local pause locking methods
+    /// </summary>
+    /// <param name="map">Current map to check if it should be paused</param>
+    /// <returns><see langword="true"/> if time should be paused on the specific map</returns>
+    public delegate bool PauseLockDelegate(Map map);
+
     public interface IAPI
     {
         bool IsHosting { get; }
@@ -502,5 +517,7 @@ namespace Multiplayer.API
         void RegisterDialogNodeTree(Type type, string methodOrPropertyName, SyncType[] argTypes = null);
 
         void RegisterDialogNodeTree(MethodInfo method);
+
+        void RegisterPauseLock(PauseLockDelegate pauseLock);
     }
 }
