@@ -497,6 +497,8 @@ namespace Multiplayer.API
         bool IsExecutingSyncCommand { get; }
         bool IsExecutingSyncCommandIssuedBySelf { get; }
 
+        IThingFilterAPI ThingFilters { get; }
+
         void WatchBegin();
         void Watch(Type targetType, string fieldName, object target = null, object index = null);
         void Watch(object target, string fieldName, object index = null);
@@ -522,4 +524,36 @@ namespace Multiplayer.API
 
         void RegisterPauseLock(PauseLockDelegate pauseLock);
     }
+
+    /// <summary>
+    /// Delegate for checking for any active <see cref="ThingFilterContext"/>
+    /// </summary>
+    /// <returns>Returns any active <see cref="ThingFilterContext"/></returns>
+    public delegate ThingFilterContext GetThingFilter();
+
+    public interface IThingFilterAPI
+    {
+        /// <summary>
+        /// Registers a <see cref="ThingFilterContext"/> which should have its methods synced for syncing changes in <see cref="ThingFilter"/>
+        /// </summary>
+        /// <param name="type">The type of <see cref="ThingFilterContext"/></param>
+        void RegisterThingFilterTarget(Type type);
+        /// <summary>
+        /// Registers a <see cref="ThingFilterContext"/> which should have its methods synced for syncing changes in <see cref="ThingFilter"/>
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="ThingFilterContext"/></typeparam>
+        void RegisterThingFilterTarget<T>() where T : ThingFilterContext;
+
+        /// <summary>
+        /// Registers a listener for returning any active <see cref="ThingFilterContext"/>
+        /// </summary>
+        /// <param name="context">Listener that will return any active <see cref="ThingFilterContext"/></param>
+        void RegisterThingFilterListener(GetThingFilter context);
+    }
+
+    /// <summary>
+    /// Syncs a type with all its declared fields. Object synced like that will be created without calling the constructor, and all fields will be filled (if they can be synced).
+    /// </summary>
+    /// <remarks>Originally intended to be used in MP only, but was moved here as <see cref="ThingFilterContext"/> needed it.</remarks>
+    public interface ISyncSimple { }
 }

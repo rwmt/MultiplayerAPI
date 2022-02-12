@@ -22,6 +22,8 @@ namespace Multiplayer.API
 
         public bool IsExecutingSyncCommandIssuedBySelf => false;
 
+        public IThingFilterAPI ThingFilters => null;
+
         public void WatchBegin()
         {
             throw new UninitializedAPI();

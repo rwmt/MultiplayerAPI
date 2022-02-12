@@ -14,10 +14,12 @@
     <Title>RimWorld-MultiplayerAPI</Title>
     <Description>Multiplayer API for RimWorld</Description>
     <PackOnBuild>true</PackOnBuild>
+    <PublicizeAsReferenceAssemblies>false</PublicizeAsReferenceAssemblies>
   </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <LangVersion>9.0</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>0MultiplayerAPI</AssemblyName>
     <OutputPath>..\Assemblies\</OutputPath>
@@ -28,7 +30,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="1.0.*" />
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.3.3200" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp;0Harmony" />
   </ItemGroup>
 
   <ItemGroup>
