@@ -118,6 +118,7 @@ namespace Multiplayer.API
     /// </summary>
     /// <example>
     /// <para>An example showing how to mark a method for syncing.</para>
+    /// <code>
     /// [SyncDialogNodeTree]
     /// public void MyMethod(...)
     /// {

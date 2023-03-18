@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-
+using HarmonyLib;
 using Verse;
 
 namespace Multiplayer.API
@@ -14,7 +14,7 @@ namespace Multiplayer.API
     public static class MP
     {
         /// <summary>Contains the API version</summary>
-        public const string API = "0.3";
+        public const string API = "0.5";
 
         /// <value>
         /// Returns <see langword="true"/> if API is initialized.
@@ -75,6 +75,11 @@ namespace Multiplayer.API
         /// Returns <see langword="true"/> if currently there's a sync command being executed that was issued by the current player.
         /// </value>
         public static bool IsExecutingSyncCommandIssuedBySelf => Sync.IsExecutingSyncCommandIssuedBySelf;
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the current player is allowed to use dev mode commands.
+        /// </summary>
+        public static bool CanUseDevMode => Sync.CanUseDevMode;
 
         /// <summary>
         /// Starts a new synchronization stack.
@@ -155,6 +160,22 @@ namespace Multiplayer.API
         /// <para>It's recommended to use <see cref="SyncFieldAttribute"/> instead, unless you have to otherwise.</para>
         /// <para>They must be Watched between MP.WatchBegin and MP.WatchEnd with the MP.Watch* methods</para>
         /// </remarks>
+        /// <param name="targetType">
+        /// <para>Name (including namespace) of the target class that contains the specified member</para>
+        /// <para>if null, <paramref name="memberPath"/> will point at field from the global namespace in the "Type/fieldName" format.</para>
+        /// <para>Accessed using Harmony <see cref="AccessTools.TypeByName"/></para>
+        /// </param>
+        /// <param name="memberPath">Path to a member. If the member is to be indexed, it has to end with /[] eg. <c>"myArray/[]"</c></param>
+        /// <returns>A new registered <see cref="ISyncField"/></returns>
+        public static ISyncField RegisterSyncField(string targetType, string memberPath) => Sync.RegisterSyncField(AccessTools.TypeByName(targetType), memberPath);
+
+        /// <summary>
+        /// Registers a field for syncing and returns it's <see cref="ISyncField"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>It's recommended to use <see cref="SyncFieldAttribute"/> instead, unless you have to otherwise.</para>
+        /// <para>They must be Watched between MP.WatchBegin and MP.WatchEnd with the MP.Watch* methods</para>
+        /// </remarks>
         /// <param name="field">FieldInfo of a field to register</param>
         /// <returns>A new registered <see cref="ISyncField"/></returns>
         public static ISyncField RegisterSyncField(FieldInfo field) => Sync.RegisterSyncField(field);
@@ -174,6 +195,19 @@ namespace Multiplayer.API
         /// <summary>
         /// Registers a method for syncing and returns its <see cref="ISyncMethod"/>.
         /// </summary>
+        /// <remarks>
+        /// <para>It's recommended to use <see cref="SyncMethodAttribute"/> instead, unless you have to otherwise.</para>
+        /// </remarks>
+        /// <param name="type">Name (including namespace) of the method that contains the method. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="methodOrPropertyName">Name of the method</param>
+        /// <param name="argTypes">Method's parameter types</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethod(string type, string methodOrPropertyName, SyncType[] argTypes = null) 
+            => Sync.RegisterSyncMethod(AccessTools.TypeByName(type), methodOrPropertyName, argTypes);
+
+        /// <summary>
+        /// Registers a method for syncing and returns its <see cref="ISyncMethod"/>.
+        /// </summary>
         /// <param name="method">MethodInfo of a method to register</param>
         /// <param name="argTypes">Method's parameter types</param>
         /// <remarks>
@@ -189,6 +223,58 @@ namespace Multiplayer.API
         public static ISyncMethod RegisterSyncMethod(MethodInfo method, SyncType[] argTypes = null) => Sync.RegisterSyncMethod(method, argTypes);
 
         /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// </summary>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentMethodType">The type of the parent method.</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal) 
+            => Sync.RegisterSyncMethodLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+
+        /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="parentType">Name (including namespace) of the method that contains the method. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentMethodType">The type of the parent method.</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambda(string parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal) 
+            => Sync.RegisterSyncMethodLambda(AccessTools.TypeByName(parentType), parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+
+        /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// <remarks>
+        /// <para>Exists for convenience, the outcome will be the same as calling <see href="RegisterSyncMethodLambda"/> with parentMethod set to <see cref="MethodType.Getter"/></para>
+        /// </remarks>
+        /// </summary>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncMethodLambdaInGetter(parentType, parentMethod, lambdaOrdinal);
+
+        /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// <remarks>
+        /// <para>Exists for convenience, the outcome will be the same as calling <see href="RegisterSyncMethodLambda"/> with parentMethod set to <see cref="MethodType.Getter"/></para>
+        /// </remarks>
+        /// </summary>
+        /// <param name="parentType">Name (including namespace) of the method that contains the method. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambdaInGetter(string parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncMethodLambdaInGetter(AccessTools.TypeByName(parentType), parentMethod, lambdaOrdinal);
+
+        /// <summary>
         /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name of your target by decompiling.
         /// </summary>
         /// <returns>The sync delegate.</returns>
@@ -201,12 +287,100 @@ namespace Multiplayer.API
         /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name of your target by decompiling.
         /// </summary>
         /// <returns>The sync delegate.</returns>
+        /// <param name="type">Name (including namespace) of the method that contains the delegate. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="nestedType">Nested type.</param>
+        /// <param name="method">Method.</param>
+        public static ISyncDelegate RegisterSyncDelegate(string type, string nestedType, string method) 
+            => Sync.RegisterSyncDelegate(AccessTools.TypeByName(type), nestedType, method);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
         /// <param name="inType">In type.</param>
         /// <param name="nestedType">Nested type.</param>
         /// <param name="methodName">Method name.</param>
         /// <param name="fields">Fields.</param>
         /// <param name="args">Arguments.</param>
         public static ISyncDelegate RegisterSyncDelegate(Type inType, string nestedType, string methodName, string[] fields, Type[] args = null) => Sync.RegisterSyncDelegate(inType, nestedType, methodName, fields, args);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="inType">Name (including namespace) of the method that contains the delegate. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="nestedType">Nested type.</param>
+        /// <param name="methodName">Method name.</param>
+        /// <param name="fields">Fields.</param>
+        /// <param name="args">Arguments.</param>
+        public static ISyncDelegate RegisterSyncDelegate(string inType, string nestedType, string methodName, string[] fields, Type[] args = null) 
+            => Sync.RegisterSyncDelegate(AccessTools.TypeByName(inType), nestedType, methodName, fields, args);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentMethodType">The type of the parent method.</param>
+        public static ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal)
+            => Sync.RegisterSyncDelegateLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Name (including namespace) of the method that contains the delegate. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentMethodType">The type of the parent method.</param>
+        public static ISyncDelegate RegisterSyncDelegateLambda(string parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal)
+            => Sync.RegisterSyncDelegateLambda(AccessTools.TypeByName(parentType), parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        public static ISyncDelegate RegisterSyncDelegateLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncDelegateLambdaInGetter(parentType, parentMethod, lambdaOrdinal);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Name (including namespace) of the method that contains the delegate. Accessed using Harmony <see cref="AccessTools.TypeByName"/></param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        public static ISyncDelegate RegisterSyncDelegateLambdaInGetter(string parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncDelegateLambdaInGetter(AccessTools.TypeByName(parentType), parentMethod, lambdaOrdinal);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="localFuncName">For example, for local function named Start: &lt;DoWindowContents&gt;g__Start|10</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        public static ISyncDelegate RegisterSyncDelegateLocalFunc(Type parentType, string parentMethod, string localFuncName, Type[] parentArgs = null)
+            => Sync.RegisterSyncDelegateLocalFunc(parentType, parentMethod, localFuncName, parentArgs);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="localFuncName">For example, for local function named Start: &lt;DoWindowContents&gt;g__Start|10</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        public static ISyncDelegate RegisterSyncDelegateLocalFunc(string parentType, string parentMethod, string localFuncName, Type[] parentArgs = null)
+            => Sync.RegisterSyncDelegateLocalFunc(AccessTools.TypeByName(parentType), parentMethod, localFuncName, parentArgs);
 
         /// <summary>
         /// Registers the SyncWorker based on SyncWorkerDelegate.
@@ -233,7 +407,6 @@ namespace Multiplayer.API
         /// Registers a method which opens a <see cref="Dialog_NodeTree"/>. The options picked by players will then be synced between all clients.
         /// </summary>
         /// <param name="method">MethodInfo of a method to register</param>
-        /// <param name="argTypes">Method's parameter types</param>
         /// <remarks>
         /// <para>It's recommended to use <see cref="SyncDialogNodeTreeAttribute"/> instead, unless you have to otherwise.</para>
         /// <para>It can be combined with <see cref="RegisterSyncMethod"/> so the call will be replicated by the MPApi on all clients automatically.</para>
@@ -266,5 +439,13 @@ namespace Multiplayer.API
         /// </code>
         /// </example>
         public static void RegisterPauseLock(PauseLockDelegate pauseLock) => Sync.RegisterPauseLock(pauseLock);
+
+        /// <summary>
+        /// In multiplayer, choice letters don't pause the game when expiring - instead, using a default choice (usually rejecting, if applicable).
+        /// This does not automatically sync choices, and the choices themselves need syncing through a sync method/delegate.
+        /// </summary>
+        /// <param name="method">Method that will be called when the letter expires. Can either be a method inside of the letter class itself, or a static method (with the instance as the parameter).</param>
+        /// <param name="letterType">The type of the letter. If null, <see cref="MethodInfo.DeclaringType"/> will be used.</param>
+        public static void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null) => Sync.RegisterDefaultLetterChoice(method, letterType);
     }
 }
