@@ -77,6 +77,11 @@ namespace Multiplayer.API
         public static bool IsExecutingSyncCommandIssuedBySelf => Sync.IsExecutingSyncCommandIssuedBySelf;
 
         /// <summary>
+        /// Returns a reference to <see cref="IThingFilterAPI"/>, which will allow for syncing changes to <see cref="ThingFilter"/>
+        /// </summary>
+        public static IThingFilterAPI ThingFilters => Sync.ThingFilters;
+
+        /// <summary>
         /// Returns <see langword="true"/> if the current player is allowed to use dev mode commands.
         /// </summary>
         public static bool CanUseDevMode => Sync.CanUseDevMode;
