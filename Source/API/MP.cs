@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -266,5 +267,31 @@ namespace Multiplayer.API
         /// </code>
         /// </example>
         public static void RegisterPauseLock(PauseLockDelegate pauseLock) => Sync.RegisterPauseLock(pauseLock);
+
+        /// <summary>
+        /// Retrieves a <see cref="Thing"/> with a provided id <see cref="Thing.thingIDNumber"/>
+        /// </summary>
+        /// <param name="id"><see cref="Thing.thingIDNumber"/> for the <see cref="Thing"/> to retrieve</param>
+        /// <returns><see cref="Thing"/> with a specific numeric ID.</returns>
+        public static Thing GetThingById(int id) => Sync.GetThingById(id);
+        /// <summary>
+        /// Retrieves a <see cref="Thing"/> with a provided id <see cref="Thing.thingIDNumber"/> and returns a <see cref="bool"/> for success/failure
+        /// </summary>
+        /// <param name="id"><see cref="Thing.thingIDNumber"/> for the <see cref="Thing"/> to retrieve</param>
+        /// <param name="value">The value of retrieved <see cref="Thing"/>, if any.</param>
+        /// <returns><see langword="true"/> if successful</returns>
+        public static bool TryGetThingById(int id, out Thing value) => Sync.TryGetThingById(id, out value);
+
+        /// <summary>
+        /// Retrieves a list of <see cref="IPlayerInfo"/> for every player
+        /// </summary>
+        /// <returns>List with every <see cref="IPlayerInfo"/></returns>
+        public static IReadOnlyList<IPlayerInfo> GetPlayers() => Sync.GetPlayers();
+        /// <summary>
+        /// Retrieves a <see cref="IPlayerInfo"/> with a specific <see cref="IPlayerInfo.Id"/>
+        /// </summary>
+        /// <param name="id"><see cref="IPlayerInfo.Id"/> of the player to retrieve</param>
+        /// <returns>Player with specified ID number</returns>
+        public static IPlayerInfo GetPlayerById(int id) => Sync.GetPlayerById(id);
     }
 }
