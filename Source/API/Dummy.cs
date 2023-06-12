@@ -22,6 +22,11 @@ namespace Multiplayer.API
 
         public bool IsExecutingSyncCommandIssuedBySelf => false;
 
+        public void SetThingFilterContext(ThingFilterContext context)
+        {
+            throw new UninitializedAPI();
+        }
+
         public void WatchBegin()
         {
             throw new UninitializedAPI();
