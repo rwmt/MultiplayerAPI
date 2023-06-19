@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using HarmonyLib;
+using Verse;
 
 namespace Multiplayer.API
 {
@@ -128,6 +129,26 @@ namespace Multiplayer.API
         }
 
         public void RegisterPauseLock(PauseLockDelegate pauseLock)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public Thing GetThingById(int id)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public bool TryGetThingById(int id, out Thing value)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public IReadOnlyList<IPlayerInfo> GetPlayers()
+        {
+            throw new UninitializedAPI();
+        }
+
+        public IPlayerInfo GetPlayerById(int id)
         {
             throw new UninitializedAPI();
         }

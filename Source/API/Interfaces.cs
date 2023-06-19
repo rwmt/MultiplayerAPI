@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using HarmonyLib;
 using Verse;
 
 namespace Multiplayer.API
@@ -599,8 +599,6 @@ namespace Multiplayer.API
         bool IsExecutingSyncCommandIssuedBySelf { get; }
         bool CanUseDevMode { get; }
 
-        IThingFilterAPI ThingFilters { get; }
-
         void WatchBegin();
         void Watch(Type targetType, string fieldName, object target = null, object index = null);
         void Watch(object target, string fieldName, object index = null);
@@ -632,37 +630,49 @@ namespace Multiplayer.API
         void RegisterPauseLock(PauseLockDelegate pauseLock);
         
         void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null);
+
+        Thing GetThingById(int id);
+        bool TryGetThingById(int id, out Thing value);
+
+        IReadOnlyList<IPlayerInfo> GetPlayers();
+        IPlayerInfo GetPlayerById(int id);
     }
 
     /// <summary>
-    /// Delegate for checking for any active <see cref="ThingFilterContext"/>
+    /// An interface for the class holding player data
     /// </summary>
-    /// <returns>Returns any active <see cref="ThingFilterContext"/></returns>
-    public delegate ThingFilterContext GetThingFilter();
-
-    public interface IThingFilterAPI
+    public interface IPlayerInfo
     {
         /// <summary>
-        /// Registers a <see cref="ThingFilterContext"/> which should have its methods synced for syncing changes in <see cref="ThingFilter"/>
+        /// ID of the current player
         /// </summary>
-        /// <param name="type">The type of <see cref="ThingFilterContext"/></param>
-        void RegisterThingFilterTarget(Type type);
+        int Id { get; }
         /// <summary>
-        /// Registers a <see cref="ThingFilterContext"/> which should have its methods synced for syncing changes in <see cref="ThingFilter"/>
+        /// Username of the current player
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="ThingFilterContext"/></typeparam>
-        void RegisterThingFilterTarget<T>() where T : ThingFilterContext;
+        string Username { get; }
+        /// <summary>
+        /// <see langword="true"/> if the current player is Arbiter instance, <see langword="false"/> in every other case
+        /// </summary>
+        bool IsArbiter { get; }
 
         /// <summary>
-        /// Registers a listener for returning any active <see cref="ThingFilterContext"/>
+        /// <see cref="Map.Index"/> of the map the player is on
         /// </summary>
-        /// <param name="context">Listener that will return any active <see cref="ThingFilterContext"/></param>
-        void RegisterThingFilterListener(GetThingFilter context);
+        int CurrentMapIndex { get; }
+        /// <summary>
+        /// The map the current player is on
+        /// </summary>
+        Map CurrentMap { get; }
+
+        /// <summary>
+        /// List of all the things the player has selected, as numeric IDs
+        /// </summary>
+        /// <remarks>Generally use <see cref="SelectedThings"/>, unless you're able to access the IDs directly.</remarks>
+        IReadOnlyList<int> SelectedThingsByIds { get; }
+        /// <summary>
+        /// List of all the things the player has selected
+        /// </summary>
+        IReadOnlyList<Thing> SelectedThings { get; }
     }
-
-    /// <summary>
-    /// Syncs a type with all its declared fields. Object synced like that will be created without calling the constructor, and all fields will be filled (if they can be synced).
-    /// </summary>
-    /// <remarks>Originally intended to be used in MP only, but was moved here as <see cref="ThingFilterContext"/> needed it.</remarks>
-    public interface ISyncSimple { }
 }
