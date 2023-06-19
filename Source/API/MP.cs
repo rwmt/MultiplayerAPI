@@ -200,15 +200,15 @@ namespace Multiplayer.API
         /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
         /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
         /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
-        /// <param name="parentMethodType">The type of the parent method.</param>
+        /// <param name="parentParentMethodType">The type of the parent method.</param>
         /// <returns>A new registered <see cref="ISyncMethod"/></returns>
-        public static ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal) 
-            => Sync.RegisterSyncMethodLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+        public static ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal) 
+            => Sync.RegisterSyncMethodLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentParentMethodType);
 
         /// <summary>
         /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
         /// <remarks>
-        /// <para>Exists for convenience, the outcome will be the same as calling <see href="RegisterSyncMethodLambda"/> with parentMethod set to <see cref="MethodType.Getter"/></para>
+        /// <para>Exists for convenience, the outcome will be the same as calling <see href="RegisterSyncMethodLambda"/> with parentMethod set to <see cref="ParentMethodType.Getter"/></para>
         /// </remarks>
         /// </summary>
         /// <param name="parentType">Type that contains the method.</param>
@@ -246,9 +246,9 @@ namespace Multiplayer.API
         /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
         /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
         /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
-        /// <param name="parentMethodType">The type of the parent method.</param>
-        public static ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal)
-            => Sync.RegisterSyncDelegateLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentMethodType);
+        /// <param name="parentParentMethodType">The type of the parent method.</param>
+        public static ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
+            => Sync.RegisterSyncDelegateLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentParentMethodType);
 
         /// <summary>
         /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.

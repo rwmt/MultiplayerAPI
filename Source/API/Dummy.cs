@@ -26,8 +26,6 @@ namespace Multiplayer.API
 
         public bool CanUseDevMode => false;
 
-        public IThingFilterAPI ThingFilters => null;
-
         public void WatchBegin()
         {
             throw new UninitializedAPI();
@@ -78,7 +76,7 @@ namespace Multiplayer.API
             throw new UninitializedAPI();
         }
 
-        public ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal)
+        public ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
         {
             throw new UninitializedAPI();
         }
@@ -98,7 +96,7 @@ namespace Multiplayer.API
             throw new UninitializedAPI();
         }
 
-        public ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, MethodType parentMethodType = MethodType.Normal)
+        public ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
         {
             throw new UninitializedAPI();
         }
@@ -133,6 +131,11 @@ namespace Multiplayer.API
             throw new UninitializedAPI();
         }
 
+        public void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null)
+        {
+            throw new UninitializedAPI();
+        }
+
         public Thing GetThingById(int id)
         {
             throw new UninitializedAPI();
@@ -149,11 +152,6 @@ namespace Multiplayer.API
         }
 
         public IPlayerInfo GetPlayerById(int id)
-        {
-            throw new UninitializedAPI();
-        }
-
-        public void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null)
         {
             throw new UninitializedAPI();
         }
