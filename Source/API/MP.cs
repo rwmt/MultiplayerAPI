@@ -15,7 +15,7 @@ namespace Multiplayer.API
     public static class MP
     {
         /// <summary>Contains the API version</summary>
-        public const string API = "0.3";
+        public const string API = "0.5";
 
         /// <value>
         /// Returns <see langword="true"/> if API is initialized.
@@ -76,6 +76,16 @@ namespace Multiplayer.API
         /// Returns <see langword="true"/> if currently there's a sync command being executed that was issued by the current player.
         /// </value>
         public static bool IsExecutingSyncCommandIssuedBySelf => Sync.IsExecutingSyncCommandIssuedBySelf;
+
+        /// <summary>
+        /// Used to set the ThingFilter context for interactions with ThingFilter UI.
+        /// Set the context before drawing the ThingFilter and then set it back to <see langword="null"/> after it's drawn.
+        /// <remarks>
+        /// This method is not "reentrant". If you call it twice without setting the context back to <see langword="null"/>, the second call will throw an exception.
+        /// </remarks>
+        /// </summary>
+        /// <param name="context">The ThingFilter context object</param>
+        public static void SetThingFilterContext(ThingFilterContext context) => Sync.SetThingFilterContext(context);
 
         /// <summary>
         /// Starts a new synchronization stack.

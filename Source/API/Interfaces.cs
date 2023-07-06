@@ -490,6 +490,25 @@ namespace Multiplayer.API
     /// <returns><see langword="true"/> if time should be paused on the specific map</returns>
     public delegate bool PauseLockDelegate(Map map);
 
+    /// <summary>
+    /// Objects implementing this marker interface sync their exact type and all declared fields.
+    /// This is useful when syncing type hierarchies by value.
+    /// <remarks>The synced object is created uninitialized using reflection (no constructor is called).</remarks>
+    /// </summary>
+    public interface ISyncSimple { }
+
+    /// <summary>
+    /// A ThingFilter context provides information for syncing ThingFilter interactions.
+    /// Inheriting objects should store the ThingFilter's owner in a record property.
+    /// The type exists because vanilla ThingFilters don't store references to their owners.
+    /// </summary>
+    public abstract record ThingFilterContext : ISyncSimple
+    {
+        public abstract ThingFilter Filter { get; }
+        public abstract ThingFilter ParentFilter { get; }
+        public virtual IEnumerable<SpecialThingFilterDef> HiddenFilters => null;
+    }
+
     public interface IAPI
     {
         bool IsHosting { get; }
@@ -497,6 +516,8 @@ namespace Multiplayer.API
         string PlayerName { get; }
         bool IsExecutingSyncCommand { get; }
         bool IsExecutingSyncCommandIssuedBySelf { get; }
+
+        void SetThingFilterContext(ThingFilterContext context);
 
         void WatchBegin();
         void Watch(Type targetType, string fieldName, object target = null, object index = null);
