@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+
 using Verse;
 
 namespace Multiplayer.API
@@ -14,7 +15,7 @@ namespace Multiplayer.API
     public static class MP
     {
         /// <summary>Contains the API version</summary>
-        public const string API = "0.3";
+        public const string API = "0.5";
 
         /// <value>
         /// Returns <see langword="true"/> if API is initialized.
@@ -80,6 +81,16 @@ namespace Multiplayer.API
         /// Returns <see langword="true"/> if the current player is allowed to use dev mode commands.
         /// </summary>
         public static bool CanUseDevMode => Sync.CanUseDevMode;
+
+        /// <summary>
+        /// Used to set the ThingFilter context for interactions with ThingFilter UI.
+        /// Set the context before drawing the ThingFilter and then set it back to <see langword="null"/> after it's drawn.
+        /// <remarks>
+        /// This method is not "reentrant". If you call it twice without setting the context back to <see langword="null"/>, the second call will throw an exception.
+        /// </remarks>
+        /// </summary>
+        /// <param name="context">The ThingFilter context object</param>
+        public static void SetThingFilterContext(ThingFilterContext context) => Sync.SetThingFilterContext(context);
 
         /// <summary>
         /// Starts a new synchronization stack.

@@ -14,7 +14,6 @@
     <Title>RimWorld-MultiplayerAPI</Title>
     <Description>Multiplayer API for RimWorld</Description>
     <PackOnBuild>true</PackOnBuild>
-    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -26,6 +25,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <DebugType>None</DebugType>
     <ReleaseVersion>0.5</ReleaseVersion>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
