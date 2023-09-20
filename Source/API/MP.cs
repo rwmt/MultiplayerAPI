@@ -83,6 +83,26 @@ namespace Multiplayer.API
         public static bool CanUseDevMode => Sync.CanUseDevMode;
 
         /// <summary>
+        /// Used to determine if the currently running code is potentially unsafe for modifying the game state, allowing for them to be handled differently or synchronized.
+        /// An example of where this could be useful is harmony patches (besides transpilers) on sync methods - the method would get cancelled and synchronized, but the patches will still run.
+        /// In situation like that the patch should be cancelled if <see cref="InInterface"/> returns <see langword="true"/>, as it'll run again after synchronizing.
+        /// </summary>
+        /// <value>
+        /// Returns <see langword="false"/> if all the following conditions are <see langword="true"/>:
+        /// <list type="bullet">
+        ///     <item><description>Multiplayer mod is enabled</description></item>
+        ///     <item><description>The game is currently in multiplayer mode</description></item>
+        ///     <item><description>The game is currently not ticking (interface drawing code, etc.)</description></item>
+        ///     <item><description>The game is not running sync commands</description></item>
+        ///     <item><description>The multiplayer game is not being reloaded</description></item>
+        ///     <item><description><see cref="Current.ProgramState"/> is <see cref="ProgramState.Playing"/></description></item>
+        ///     <item><description><see cref="LongEventHandler.currentEvent"/> is <see langword="null"/></description></item>
+        /// </list>
+        /// If any of them are <see langword="false"/>, it returns <see langword="true"/>.
+        /// </value>
+        public static bool InInterface => Sync.InInterface;
+
+        /// <summary>
         /// Used to set the ThingFilter context for interactions with ThingFilter UI.
         /// Set the context before drawing the ThingFilter and then set it back to <see langword="null"/> after it's drawn.
         /// <remarks>

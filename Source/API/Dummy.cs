@@ -26,6 +26,8 @@ namespace Multiplayer.API
 
         public bool CanUseDevMode => false;
 
+        public bool InInterface => false;
+
         public void SetThingFilterContext(ThingFilterContext context)
         {
             throw new UninitializedAPI();

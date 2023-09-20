@@ -617,6 +617,7 @@ namespace Multiplayer.API
         bool IsExecutingSyncCommand { get; }
         bool IsExecutingSyncCommandIssuedBySelf { get; }
         bool CanUseDevMode { get; }
+        bool InInterface { get; }
 
         void SetThingFilterContext(ThingFilterContext context);
 
