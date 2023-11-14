@@ -184,6 +184,12 @@ namespace Multiplayer.API
         public virtual bool IsSessionValid => true;
 
         /// <summary>
+        /// Mandatory constructor for any subclass of <see cref="Session"/>.
+        /// </summary>
+        /// <param name="map">The map this session belongs to. It will be provided by session manager when syncing.</param>
+        protected Session(Map map) { }
+
+        /// <summary>
         /// Called once the sessions has been added to the list of active sessions. Can be used for initialization.
         /// </summary>
         /// <remarks>In case of <see cref="ISessionWithCreationRestrictions"/>, this will only be called if successfully added.</remarks>
@@ -248,6 +254,9 @@ namespace Multiplayer.API
     /// </summary>
     public abstract class ExposableSession : Session, IExposable
     {
+        /// <inheritdoc cref="Session(Map)"/>
+        protected ExposableSession(Map map) : base(map) { }
+
         public virtual void ExposeData()
         {
             Scribe_Values.Look(ref sessionId, "sessionId");
@@ -264,6 +273,9 @@ namespace Multiplayer.API
     /// </summary>
     public abstract class SemiPersistentSession : Session
     {
+        /// <inheritdoc cref="Session(Map)"/>
+        protected SemiPersistentSession(Map map) : base(map) { }
+
         /// <summary>
         /// Writes/reads the data used by this session.
         /// </summary>
