@@ -164,6 +164,12 @@ namespace Multiplayer.API
         ISyncMethod SetDebugOnly();
 
         /// <summary>
+        /// Instructs SyncMethod to synchronize only if it's invoked by the host.
+        /// </summary>
+        /// <returns>self</returns>
+        ISyncMethod SetHostOnly();
+
+        /// <summary>
         /// Adds an Action that runs before a call is replicated on client.
         /// </summary>
         /// <param name="action">An action ran before a call is replicated on client. Called with target and value.</param>
@@ -184,6 +190,27 @@ namespace Multiplayer.API
         /// <returns>self</returns>
         ISyncMethod SetVersion(int version);
 
+        /// <summary>
+        /// Transforms a parameter of a method, result of which will be synced instead of the parameter itself
+        /// </summary>
+        /// <param name="index">Index at which parameter is going to be transformed</param>
+        /// <param name="serializer">A serializer which will transform the argument before and after syncing</param>
+        /// <param name="skipTypeCheck">Check to ensure <typeparamref name="Live"/> is the same type as the argument will be dropped. More error-prone (and only detectable at runtime), but allows transforming arguments even if the current assembly cannot reference the specific type.</param>
+        /// <typeparam name="Live">The type which will be transformed before, and type that <typeparamref name="Networked"/> will be transformed back into after syncing</typeparam>
+        /// <typeparam name="Networked">The type which will be synced to other players instead of <typeparamref name="Live"/></typeparam>
+        /// <returns>self</returns>
+        ISyncMethod TransformArgument<Live, Networked>(int index, Serializer<Live, Networked> serializer, bool skipTypeCheck = false);
+
+        /// <summary>
+        /// Transforms an object instance within which the synced method is declared, result of which will be synced instead of the instance itself
+        /// </summary>
+        /// <param name="serializer">A serializer which will transform the target instance before and after syncing</param>
+        /// <param name="skipTypeCheck">Check to ensure <typeparamref name="Live"/> is the same type as the target instance will be dropped fully. More error-prone (and only detectable at runtime), but allows transforming target instance even if the current assembly cannot reference the specific type.</param>
+        /// <typeparam name="Live">The type which will be transformed before, and type that <typeparamref name="Networked"/> will be transformed back into after syncing</typeparam>
+        /// <typeparam name="Networked">The type which will be synced to other players instead of <typeparamref name="Live"/></typeparam>
+        /// <returns>self</returns>
+        ISyncMethod TransformTarget<Live, Networked>(Serializer<Live, Networked> serializer, bool skipTypeCheck = false);
+
         string ToString();
     }
 
@@ -195,14 +222,14 @@ namespace Multiplayer.API
     public interface ISyncDelegate : ISyncCall
     {
         /// <summary>
-        /// Instructs ISyncDelegate to cancel synchronization except for <param name="blacklist">
+        /// Instructs ISyncDelegate to cancel synchronization except for <param name="blacklist"/>
         /// </summary>
         /// <returns>self</returns>
         /// <param name="blacklist">field names to be excluded</param>
         ISyncDelegate CancelIfAnyFieldNull(params string[] blacklist);
 
         /// <summary>
-        /// Instructs ISyncDelegate to cancel synchronization except for <param name="whitelist">
+        /// Instructs ISyncDelegate to cancel synchronization except for <param name="whitelist"/>
         /// </summary>
         /// <returns>self</returns>
         /// <param name="whitelist">Whitelist.</param>
@@ -212,7 +239,28 @@ namespace Multiplayer.API
         /// Cancels if no selected objects.
         /// </summary>
         /// <returns>self</returns>
+        [Obsolete($"Use {nameof(CancelIfNoSelectedMapObjects)} instead")]
         ISyncDelegate CancelIfNoSelectedObjects();
+
+        /// <summary>
+        /// Instructs SyncDelegate to cancel synchronization if no map objects were selected during call replication.
+        /// </summary>
+        /// <returns>self</returns>
+        ISyncDelegate CancelIfNoSelectedMapObjects();
+
+        /// <summary>
+        /// Instructs SyncDelegate to cancel synchronization if no world objects were selected during call replication.
+        /// </summary>
+        /// <returns>self</returns>
+        ISyncDelegate CancelIfNoSelectedWorldObjects();
+
+        /// <summary>
+        /// Use parameter's type's IExposable interface to transfer its data to other clients.
+        /// </summary>
+        /// <remarks>IExposable is the interface used for saving data to the save which means it utilizes IExposable.ExposeData() method.</remarks>
+        /// <returns>self</returns>
+        /// <param name="fields">Fields to sync by using IExposable.</param>
+        ISyncDelegate ExposeFields(params string[] fields);
 
         /// <summary>
         /// Removes the nulls from lists.
@@ -233,6 +281,58 @@ namespace Multiplayer.API
         /// </summary>
         /// <returns>self</returns>
         ISyncDelegate SetDebugOnly();
+
+        /// <summary>
+        /// Instructs SyncDelegate to synchronize only if it's invoked by the host.
+        /// </summary>
+        /// <returns>self</returns>
+        ISyncDelegate SetHostOnly();
+
+        /// <summary>
+        /// Adds an Action that runs before a call is replicated on client.
+        /// </summary>
+        /// <param name="action">An action ran before a call is replicated on client. Called with target and value.</param>
+        /// <returns>self</returns>
+        ISyncDelegate SetPreInvoke(Action<object, object[]> action);
+
+        /// <summary>
+        /// Adds an Action that runs after a call is replicated on client.
+        /// </summary>
+        /// <param name="action">An action ran after a call is replicated on client. Called with target and value.</param>
+        /// <returns>self</returns>
+        ISyncDelegate SetPostInvoke(Action<object, object[]> action);
+
+        /// <summary>
+        /// Transforms a parameter of a method, result of which will be synced instead of the parameter itself
+        /// </summary>
+        /// <param name="index">Index at which parameter is going to be transformed</param>
+        /// <param name="serializer">A serializer which will transform the argument before and after syncing</param>
+        /// <param name="skipTypeCheck">Check to ensure <typeparamref name="Live"/> is the same type as the argument will be dropped. More error-prone (and only detectable at runtime), but allows transforming arguments even if the current assembly cannot reference the specific type.</param>
+        /// <typeparam name="Live">The type which will be transformed before, and type that <typeparamref name="Networked"/> will be transformed back into after syncing</typeparam>
+        /// <typeparam name="Networked">The type which will be synced to other players instead of <typeparamref name="Live"/></typeparam>
+        /// <returns>self</returns>
+        ISyncDelegate TransformArgument<Live, Networked>(int index, Serializer<Live, Networked> serializer, bool skipTypeCheck = false);
+
+        /// <summary>
+        /// Transforms an object instance within which the synced method is declared, result of which will be synced instead of the instance itself
+        /// </summary>
+        /// <param name="serializer">A serializer which will transform the target instance before and after syncing</param>
+        /// <param name="skipTypeCheck">Check to ensure <typeparamref name="Live"/> is the same type as the target instance will be dropped. More error-prone (and only detectable at runtime), but allows transforming target instance even if the current assembly cannot reference the specific type.</param>
+        /// <typeparam name="Live">The type which will be transformed before, and type that <typeparamref name="Networked"/> will be transformed back into after syncing</typeparam>
+        /// <typeparam name="Networked">The type which will be synced to other players instead of <typeparamref name="Live"/></typeparam>
+        /// <returns>self</returns>
+        ISyncDelegate TransformTarget<Live, Networked>(Serializer<Live, Networked> serializer, bool skipTypeCheck = false);
+
+        /// <summary>
+        /// Transforms a field inside of the delegate, result of which will be synced instead of the field itself
+        /// </summary>
+        /// <param name="field">Name of a field which will be transformed before and after syncing. Supports fields inside of fields referencing other delegates, for example: `firstDelegate/anotherDelegate/targetField`</param>
+        /// <param name="serializer">A serializer which will transform the field before and after syncing</param>
+        /// <param name="skipTypeCheck">Check to ensure <typeparamref name="Live"/> is the same type as the field will be dropped. More error-prone (and only detectable at runtime), but allows transforming fields even if the current assembly cannot reference the specific type.</param>
+        /// <typeparam name="Live">The type which will be transformed before, and type that <typeparamref name="Networked"/> will be transformed back into after syncing</typeparam>
+        /// <typeparam name="Networked">The type which will be synced to other players instead of <typeparamref name="Live"/></typeparam>
+        /// <returns></returns>
+        ISyncDelegate TransformField<Live, Networked>(string field, Serializer<Live, Networked> serializer, bool skipTypeCheck = false);
 
         string ToString();
     }
@@ -516,6 +616,8 @@ namespace Multiplayer.API
         string PlayerName { get; }
         bool IsExecutingSyncCommand { get; }
         bool IsExecutingSyncCommandIssuedBySelf { get; }
+        bool CanUseDevMode { get; }
+        bool InInterface { get; }
 
         void SetThingFilterContext(ThingFilterContext context);
 
@@ -532,9 +634,14 @@ namespace Multiplayer.API
 
         ISyncMethod RegisterSyncMethod(Type type, string methodOrPropertyName, SyncType[] argTypes = null);
         ISyncMethod RegisterSyncMethod(MethodInfo method, SyncType[] argTypes);
+        ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal);
+        ISyncMethod RegisterSyncMethodLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal);
 
         ISyncDelegate RegisterSyncDelegate(Type type, string nestedType, string method);
         ISyncDelegate RegisterSyncDelegate(Type inType, string nestedType, string methodName, string[] fields, Type[] args = null);
+        ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal);
+        ISyncDelegate RegisterSyncDelegateLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal);
+        ISyncDelegate RegisterSyncDelegateLocalFunc(Type parentType, string parentMethod, string localFuncName, Type[] parentArgs = null);
 
         void RegisterSyncWorker<T>(SyncWorkerDelegate<T> syncWorkerDelegate, Type targetType = null, bool isImplicit = false, bool shouldConstruct = false);
 
@@ -543,6 +650,8 @@ namespace Multiplayer.API
         void RegisterDialogNodeTree(MethodInfo method);
 
         void RegisterPauseLock(PauseLockDelegate pauseLock);
+        
+        void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null);
 
         Thing GetThingById(int id);
         bool TryGetThingById(int id, out Thing value);

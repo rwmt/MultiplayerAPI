@@ -24,6 +24,10 @@ namespace Multiplayer.API
 
         public bool IsExecutingSyncCommandIssuedBySelf => false;
 
+        public bool CanUseDevMode => false;
+
+        public bool InInterface => false;
+
         public void SetThingFilterContext(ThingFilterContext context)
         {
             throw new UninitializedAPI();
@@ -79,12 +83,37 @@ namespace Multiplayer.API
             throw new UninitializedAPI();
         }
 
+        public ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public ISyncMethod RegisterSyncMethodLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+        {
+            throw new UninitializedAPI();
+        }
+
         public ISyncDelegate RegisterSyncDelegate(Type inType, string nestedType, string methodName, string[] fields, Type[] args = null)
         {
             throw new UninitializedAPI();
         }
 
         public ISyncDelegate RegisterSyncDelegate(Type type, string nestedType, string method)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public ISyncDelegate RegisterSyncDelegateLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public ISyncDelegate RegisterSyncDelegateLocalFunc(Type parentType, string parentMethod, string localFuncName, Type[] parentArgs = null)
         {
             throw new UninitializedAPI();
         }
@@ -105,6 +134,11 @@ namespace Multiplayer.API
         }
 
         public void RegisterPauseLock(PauseLockDelegate pauseLock)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null)
         {
             throw new UninitializedAPI();
         }

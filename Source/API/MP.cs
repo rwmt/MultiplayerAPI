@@ -78,6 +78,31 @@ namespace Multiplayer.API
         public static bool IsExecutingSyncCommandIssuedBySelf => Sync.IsExecutingSyncCommandIssuedBySelf;
 
         /// <summary>
+        /// Returns <see langword="true"/> if the current player is allowed to use dev mode commands.
+        /// </summary>
+        public static bool CanUseDevMode => Sync.CanUseDevMode;
+
+        /// <summary>
+        /// Used to determine if the currently running code is potentially unsafe for modifying the game state, allowing for them to be handled differently or synchronized.
+        /// An example of where this could be useful is harmony patches (besides transpilers) on sync methods - the method would get cancelled and synchronized, but the patches will still run.
+        /// In situation like that the patch should be cancelled if <see cref="InInterface"/> returns <see langword="true"/>, as it'll run again after synchronizing.
+        /// </summary>
+        /// <value>
+        /// Returns <see langword="false"/> if all the following conditions are <see langword="true"/>:
+        /// <list type="bullet">
+        ///     <item><description>Multiplayer mod is enabled</description></item>
+        ///     <item><description>The game is currently in multiplayer mode</description></item>
+        ///     <item><description>The game is currently not ticking (interface drawing code, etc.)</description></item>
+        ///     <item><description>The game is not running sync commands</description></item>
+        ///     <item><description>The multiplayer game is not being reloaded</description></item>
+        ///     <item><description><see cref="Current.ProgramState"/> is <see cref="ProgramState.Playing"/></description></item>
+        ///     <item><description><see cref="LongEventHandler.currentEvent"/> is <see langword="null"/></description></item>
+        /// </list>
+        /// If any of them are <see langword="false"/>, it returns <see langword="true"/>.
+        /// </value>
+        public static bool InInterface => Sync.InInterface;
+
+        /// <summary>
         /// Used to set the ThingFilter context for interactions with ThingFilter UI.
         /// Set the context before drawing the ThingFilter and then set it back to <see langword="null"/> after it's drawn.
         /// <remarks>
@@ -200,6 +225,31 @@ namespace Multiplayer.API
         public static ISyncMethod RegisterSyncMethod(MethodInfo method, SyncType[] argTypes = null) => Sync.RegisterSyncMethod(method, argTypes);
 
         /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// </summary>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentParentMethodType">The type of the parent method.</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal) 
+            => Sync.RegisterSyncMethodLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentParentMethodType);
+
+        /// <summary>
+        /// Registers a compiler-generated lambda for syncing and returns its <see cref="ISyncMethod"/>, you will have to figure out the ordinal of your target by decompiling.
+        /// <remarks>
+        /// <para>Exists for convenience, the outcome will be the same as calling <see href="RegisterSyncMethodLambda"/> with parentMethod set to <see cref="ParentMethodType.Getter"/></para>
+        /// </remarks>
+        /// </summary>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <returns>A new registered <see cref="ISyncMethod"/></returns>
+        public static ISyncMethod RegisterSyncMethodLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncMethodLambdaInGetter(parentType, parentMethod, lambdaOrdinal);
+
+        /// <summary>
         /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name of your target by decompiling.
         /// </summary>
         /// <returns>The sync delegate.</returns>
@@ -218,6 +268,39 @@ namespace Multiplayer.API
         /// <param name="fields">Fields.</param>
         /// <param name="args">Arguments.</param>
         public static ISyncDelegate RegisterSyncDelegate(Type inType, string nestedType, string methodName, string[] fields, Type[] args = null) => Sync.RegisterSyncDelegate(inType, nestedType, methodName, fields, args);
+        
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        /// <param name="parentParentMethodType">The type of the parent method.</param>
+        public static ISyncDelegate RegisterSyncDelegateLambda(Type parentType, string parentMethod, int lambdaOrdinal, Type[] parentArgs = null, ParentMethodType parentParentMethodType = ParentMethodType.Normal)
+            => Sync.RegisterSyncDelegateLambda(parentType, parentMethod, lambdaOrdinal, parentArgs, parentParentMethodType);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="lambdaOrdinal">For example, with lambdaOrdinal = 3: &lt;FillTab&gt;b__10_3</param>
+        public static ISyncDelegate RegisterSyncDelegateLambdaInGetter(Type parentType, string parentMethod, int lambdaOrdinal)
+            => Sync.RegisterSyncDelegateLambdaInGetter(parentType, parentMethod, lambdaOrdinal);
+
+        /// <summary>
+        /// Registers the syncDelegate. Handles anonymous nested types, you will have to figure out the name and lambda ordinal of your target by decompiling.
+        /// </summary>
+        /// <returns>The sync delegate.</returns>
+        /// <param name="parentType">Type that contains the method.</param>
+        /// <param name="parentMethod">Name of the method the lambda is a child of.</param>
+        /// <param name="localFuncName">For example, for local function named Start: &lt;DoWindowContents&gt;g__Start|10</param>
+        /// <param name="parentArgs">Arguments of the parent method. Needed if there's an more than 1 method with the same name.</param>
+        public static ISyncDelegate RegisterSyncDelegateLocalFunc(Type parentType, string parentMethod, string localFuncName, Type[] parentArgs = null)
+            => Sync.RegisterSyncDelegateLocalFunc(parentType, parentMethod, localFuncName, parentArgs);
 
         /// <summary>
         /// Registers the SyncWorker based on SyncWorkerDelegate.
@@ -244,7 +327,6 @@ namespace Multiplayer.API
         /// Registers a method which opens a <see cref="Dialog_NodeTree"/>. The options picked by players will then be synced between all clients.
         /// </summary>
         /// <param name="method">MethodInfo of a method to register</param>
-        /// <param name="argTypes">Method's parameter types</param>
         /// <remarks>
         /// <para>It's recommended to use <see cref="SyncDialogNodeTreeAttribute"/> instead, unless you have to otherwise.</para>
         /// <para>It can be combined with <see cref="RegisterSyncMethod"/> so the call will be replicated by the MPApi on all clients automatically.</para>
@@ -277,6 +359,14 @@ namespace Multiplayer.API
         /// </code>
         /// </example>
         public static void RegisterPauseLock(PauseLockDelegate pauseLock) => Sync.RegisterPauseLock(pauseLock);
+
+        /// <summary>
+        /// In multiplayer, choice letters don't pause the game when expiring - instead, using a default choice (usually rejecting, if applicable).
+        /// This does not automatically sync choices, and the choices themselves need syncing through a sync method/delegate.
+        /// </summary>
+        /// <param name="method">Method that will be called when the letter expires. Can either be a method inside of the letter class itself, or a static method (with the instance as the parameter).</param>
+        /// <param name="letterType">The type of the letter. If null, <see cref="MethodInfo.DeclaringType"/> will be used.</param>
+        public static void RegisterDefaultLetterChoice(MethodInfo method, Type letterType = null) => Sync.RegisterDefaultLetterChoice(method, letterType);
 
         /// <summary>
         /// Retrieves a <see cref="Thing"/> with a provided id <see cref="Thing.thingIDNumber"/>
