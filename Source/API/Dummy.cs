@@ -162,5 +162,20 @@ namespace Multiplayer.API
         {
             throw new UninitializedAPI();
         }
+
+        public ISessionManager GetGlobalSessionManager()
+        {
+            throw new UninitializedAPI();
+        }
+
+        public ISessionManager GetLocalSessionManager(Map map)
+        {
+            throw new UninitializedAPI();
+        }
+
+        public void SetCurrentSessionWithTransferables(ISessionWithTransferables session)
+        {
+            throw new UninitializedAPI();
+        }
     }
 }

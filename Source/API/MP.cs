@@ -358,6 +358,7 @@ namespace Multiplayer.API
         ///     RegisterPauseLock(map => MyOtherClass.shouldPause);
         /// </code>
         /// </example>
+        [Obsolete($"Use {nameof(Session)} instead.")]
         public static void RegisterPauseLock(PauseLockDelegate pauseLock) => Sync.RegisterPauseLock(pauseLock);
 
         /// <summary>
@@ -393,5 +394,41 @@ namespace Multiplayer.API
         /// <param name="id"><see cref="IPlayerInfo.Id"/> of the player to retrieve</param>
         /// <returns>Player with specified ID number</returns>
         public static IPlayerInfo GetPlayerById(int id) => Sync.GetPlayerById(id);
+
+        /// <summary>
+        /// Retrieves the global (world) session manager.
+        /// </summary>
+        /// <returns>The global (world) session manager.</returns>
+        /// <remarks>As long as a multiplayer session is active, there should always be a global session manager. This method should never return <see langword="null"/> in such cases, unless something is very broken.</remarks>
+        public static ISessionManager GetGlobalSessionManager() => Sync.GetGlobalSessionManager();
+        /// <summary>
+        /// Retrieves the local (map) session manager.
+        /// </summary>
+        /// <param name="map">The map whose session manager will be retrieved.</param>
+        /// <returns>The local (map) session manager.</returns>
+        /// <remarks>As long as a multiplayer session is active, all maps should contain a session manager. This method should never return <see langword="null"/> in such cases, unless something is very broken.</remarks>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="map"/> is null.</exception>
+        public static ISessionManager GetLocalSessionManager(Map map) => Sync.GetLocalSessionManager(map);
+        /// <summary>
+        /// <para>Sets the currently active session with transferables. Used for syncing changes in transferables by letting Multiplayer know which session should be synced.</para>
+        /// <para>It cannot be set to anything but <see langword="null"/> while a session is currently set as active.</para>
+        /// <para>The session needs to be set before (potentially) operating on the trasnferables, and unset afterwards.</para>
+        /// <para>The session should be set/unset in a <see langword="try"/><see langword="finally"/> block.</para>
+        /// </summary>
+        /// <param name="session">The session to set as the active one, or <see langword="null"/> to unset.</param>
+        /// <example>
+        /// <code>
+        ///     try
+        ///     {
+        ///         MP.SetCurrentSessionWithTransferables(session);
+        ///         OperateOnTransferables();
+        ///     }
+        ///     finally
+        ///     {
+        ///         MP.SetCurrentSessionWithTransferables(null);
+        ///     }
+        /// </code>
+        /// </example>
+        public static void SetCurrentSessionWithTransferables(ISessionWithTransferables session) => Sync.SetCurrentSessionWithTransferables(session);
     }
 }
