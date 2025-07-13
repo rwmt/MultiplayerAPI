@@ -63,7 +63,7 @@ public abstract class Session
         }
         else
         {
-            if (WorldRendererUtility.WorldRenderedNow) CameraJumper.TryHideWorld();
+            if (WorldRendererUtility.WorldSelected) CameraJumper.TryHideWorld();
             Current.Game.CurrentMap = map;
         }
     }

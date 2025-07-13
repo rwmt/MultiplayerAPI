@@ -15,7 +15,7 @@ namespace Multiplayer.API;
 public static class MP
 {
     /// <summary>Contains the API version</summary>
-    public const string API = "0.5";
+    public const string API = "0.6";
 
     /// <value>
     /// Returns <see langword="true"/> if API is initialized.

@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>RimWorld.MultiplayerAPI</PackageId>
-    <PackageVersion>0.5</PackageVersion>
+    <PackageVersion>0.6</PackageVersion>
     <Authors>notfood</Authors>
     <PackageIconUrl>https://i.imgur.com/amy7QJE.png</PackageIconUrl>
     <Owners>notfood</Owners>
@@ -24,12 +24,12 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <DebugType>None</DebugType>
-    <ReleaseVersion>0.5</ReleaseVersion>
+    <ReleaseVersion>0.6</ReleaseVersion>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3641" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4518" />
   </ItemGroup>
 
   <ItemGroup>
