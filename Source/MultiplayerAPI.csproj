@@ -4,11 +4,12 @@
     <PackageId>RimWorld.MultiplayerAPI</PackageId>
     <PackageVersion>0.6</PackageVersion>
     <Authors>notfood</Authors>
-    <PackageIconUrl>https://i.imgur.com/amy7QJE.png</PackageIconUrl>
     <Owners>notfood</Owners>
     <PackageProjectUrl>https://github.com/rwmt/MultiplayerAPI</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/rwmt/MultiplayerAPI/wiki/</PackageReleaseNotes>
-    <PackageLicenseUrl>https://github.com/rwmt/MultiplayerAPI/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Summary>Multiplayer API for RimWorld</Summary>
     <PackageTags>rimworld mod</PackageTags>
     <Title>RimWorld-MultiplayerAPI</Title>
@@ -34,6 +35,12 @@
 
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
