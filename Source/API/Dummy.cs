@@ -179,4 +179,22 @@ class Dummy : IAPI
     {
         throw new UninitializedAPI();
     }
+
+    public bool IsMultifaction => false;
+
+    public Faction SpectatorFaction => null;
+
+    public void PushFaction(Map map, Faction faction)
+    {
+        throw new UninitializedAPI();
+    }
+
+    public void PopFaction(Map map = null)
+    {
+        throw new UninitializedAPI();
+    }
+
+    public void RepeatForWorldFactions(Action action) { }
+
+    public void RepeatForMapFactions(Map map, Action action) { }
 }
