@@ -61,4 +61,11 @@ public interface IAPI
     ISessionManager GetGlobalSessionManager();
     ISessionManager GetLocalSessionManager(Map map);
     void SetCurrentSessionWithTransferables(ISessionWithTransferables session);
+
+    bool IsMultifaction { get; }
+    Faction SpectatorFaction { get; }
+    void PushFaction(Map map, Faction faction);
+    void PopFaction(Map map = null);
+    void RepeatForWorldFactions(Action action);
+    void RepeatForMapFactions(Map map, Action action);
 }

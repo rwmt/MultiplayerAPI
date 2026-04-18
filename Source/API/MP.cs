@@ -406,6 +406,38 @@ public static class MP
     /// </summary>
     /// <returns>The global (world) session manager.</returns>
     /// <remarks>As long as a multiplayer session is active, there should always be a global session manager. This method should never return <see langword="null"/> in such cases, unless something is very broken.</remarks>
+    /// <summary>
+    /// Returns <see langword="true"/> if multifaction is enabled in the current multiplayer session.
+    /// </summary>
+    public static bool IsMultifaction => Sync.IsMultifaction;
+
+    /// <summary>
+    /// The spectator faction used internally by Multiplayer. Useful for skipping it when iterating player factions.
+    /// </summary>
+    public static Faction SpectatorFaction => Sync.SpectatorFaction;
+
+    /// <summary>
+    /// Pushes a faction context for the given map. Use <see cref="PopFaction"/> to restore the previous context.
+    /// Pass <see langword="null"/> for map when operating at world level.
+    /// </summary>
+    public static void PushFaction(Map map, Faction faction) => Sync.PushFaction(map, faction);
+
+    /// <summary>
+    /// Pops the current faction context, restoring the previous one.
+    /// Pass <see langword="null"/> for map when operating at world level.
+    /// </summary>
+    public static void PopFaction(Map map = null) => Sync.PopFaction(map);
+
+    /// <summary>
+    /// Calls <paramref name="action"/> once for each non-spectator player faction with the world faction context set appropriately.
+    /// </summary>
+    public static void RepeatForWorldFactions(Action action) => Sync.RepeatForWorldFactions(action);
+
+    /// <summary>
+    /// Calls <paramref name="action"/> once for each non-spectator player faction with the map and world faction context set appropriately.
+    /// </summary>
+    public static void RepeatForMapFactions(Map map, Action action) => Sync.RepeatForMapFactions(map, action);
+
     public static ISessionManager GetGlobalSessionManager() => Sync.GetGlobalSessionManager();
     /// <summary>
     /// Retrieves the local (map) session manager.
